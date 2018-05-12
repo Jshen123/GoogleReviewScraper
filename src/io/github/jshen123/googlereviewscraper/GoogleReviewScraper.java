@@ -17,5 +17,7 @@ public class GoogleReviewScraper {
         }
     }
 
-
+    public Document getDocument() {
+        return document;
+    }
 }
