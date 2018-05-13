@@ -1,8 +1,7 @@
 package io.github.jshen123.googlereviewscraper;
 
+import java.io.*;
 import java.util.Scanner;
-import java.io.File;
-import java.io.FileNotFoundException;
 
 import java.util.ArrayList;
 
@@ -13,6 +12,7 @@ public class Main {
         Scanner reader = new Scanner(System.in);
 
         ArrayList<String> urlList= new ArrayList<>();
+        ArrayList<String> infoList= new ArrayList<>();
 
         String fileName = reader.nextLine();
         File file = new File(fileName);
@@ -20,7 +20,7 @@ public class Main {
         try {
             Scanner inputStream = new Scanner(file);
             while(inputStream.hasNextLine()){
-                urlList.add("https://www.google.com/search?q=" + inputStream.nextLine());
+                infoList.add(inputStream.nextLine());
             }
             inputStream.close();
 
@@ -28,20 +28,31 @@ public class Main {
             e.printStackTrace();
         }
 
-        urlList.remove(0);
+        infoList.remove(0);
 
-//        print("running...");
+        print("running...");
 
-//        ArrayList<String> testArray = new ArrayList<>();
-//        testArray.add("https://www.google.com/search?q=900+Arbour+Lake+Road+NW+senior");
-//        testArray.add("https://www.google.com/search?q=Brooksdale+Broadway+Mesa+senior");
+        // add google search url before query terms
+        for (int i = 0; i < infoList.size(); i++){
+            urlList.add("https://www.google.com/search?q=" + infoList.get(i));
+        }
 
         GoogleReviewScraper scraper = new GoogleReviewScraper(urlList);
-//
-//        for (int i = 0; i < urlList.size(); i++){
-//            print(scraper.getRating().get(i));
-//            print(scraper.getNumberOfReviews().get(i));
-//        }
+
+        try {
+            FileOutputStream fout = new FileOutputStream("output_google_reviews_data.csv");
+            PrintStream csv = new PrintStream(fout);
+            csv.println("name                                       rating   number of reviews ");
+
+            for (int i = 0; i < infoList.size(); i++){
+                csv.println(infoList.get(i) + "  " + scraper.getRating().get(i) + "  " + scraper.getNumberOfReviews().get(i));
+            }
+
+            fout.close();
+
+        } catch(IOException e){
+            e.printStackTrace();
+        }
 
 
         print("done!");
